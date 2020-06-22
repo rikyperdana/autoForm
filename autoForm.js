@@ -204,7 +204,7 @@ function autoForm(opts){return {view: function(){
       ]()
     }),
     m('.row', m('button.button',
-      _.merge({type: 'submit'}, opts.submit),
+      _.assign({type: 'submit', class: 'is-info'}, opts.submit),
       (opts.submit && opts.submit.value) || 'Submit'
     ))
   )
