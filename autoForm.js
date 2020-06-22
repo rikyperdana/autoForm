@@ -203,8 +203,9 @@ function autoForm(opts){return {view: function(){
         _.get(val, 'autoform.type') || 'standard'
       ]()
     }),
-    m('.row', m('input.button', _.merge({
-      type: 'submit', value: 'Submit', class: 'is-primary'
-    }, opts.submit)))
+    m('.row', m('button.button',
+      _.merge({type: 'submit'}, opts.submit),
+      (opts.submit && opts.submit.value) || 'Submit'
+    ))
   )
 }}}
