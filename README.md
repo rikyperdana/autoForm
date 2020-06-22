@@ -1,5 +1,9 @@
 # AutoForm
 
+[Demo](https://rikyperdana.github.io/autoForm/)
+
+Submit anything and see the browser console
+
 ## Introduction
 AutoForm is a remake of Meteor AutoForm library that serves similiar purpose of generating a form which follow defined schemas.
 You may take this project as a standalone boilerplate or copy some of it's parts to be included in your project or anything you see fit.
