@@ -1,4 +1,4 @@
-# AutoForm on Glitch
+# AutoForm
 
 ## Introduction
 AutoForm is a remake of Meteor AutoForm library that serves similiar purpose of generating a form which follow defined schemas.
