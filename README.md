@@ -66,6 +66,10 @@ education: {type: Array},
 'education.$.name': {type: String, label: 'School/University Name'},
 'education.$.date': {type: Date, label: 'Graduation date'},
 excluded: {type: String, exclude: true},
+'submission_time': {
+  type: Date, optional: true,
+  autoform: {type: 'datetime-local'}
+},
 just_info: {
   type: String,
   autoform: {type: 'readonly'},
