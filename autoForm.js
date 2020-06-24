@@ -109,6 +109,13 @@ function autoForm(opts){return {view: function(){
         rows: _.get(schema, 'autoform.rows') || 6,
       })
     )},
+    password: function(){return m('.field',
+      attr.label(name, schema), m('input.input', {
+        name: !schema.exclude ? name : '',
+        required: !schema.optional, type: 'password',
+        placeholder: _.get(schema, 'autoform.placeholder')
+      })
+    )},
     select: function(){return m('.field.is-expanded',
       attr.label(name, schema),
       m('.select.is-fullwidth', m('select',
