@@ -15,7 +15,7 @@ function autoForm(opts){return {view: function(){
     function recurse(doc){
       var value = doc[_.keys(doc)[0]]
       return typeof(value) === 'object' ? _.map(value, function(val, key){
-        return recurse(_.fromPairs([[_.keys(doc)[0]+'.'+key, val]]))
+        return recurse({[_.keys(doc)[0]+'.'+key]: val})
       }) : doc
     }
     return _.fromPairs(
@@ -43,7 +43,7 @@ function autoForm(opts){return {view: function(){
             var type = opts.schema[normal(obj.name)].type
             return _.reduceRight(
               obj.name.split('.'),
-              function(res, inc){return _.fromPairs([[inc, res]])},
+              function(res, inc){return {[inc]: res}},
               obj.value && [ // value conversion
                 ((type === String) && obj.value),
                 ((type === Number) && +(obj.value)),
@@ -58,7 +58,7 @@ function autoForm(opts){return {view: function(){
                   return i === +_.keys(inc)[0] ?
                   recursive(_.values(inc)[0]) : undefined
                 }),
-                _.fromPairs([[_.keys(inc)[0], recursive(_.values(inc)[0])]])
+                {[_.keys(inc)[0]]: recursive(_.values(inc)[0])}
               ]), inc
             ])}
             return _.merge(res, recursive(inc))
