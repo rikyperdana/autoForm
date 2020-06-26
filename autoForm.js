@@ -155,9 +155,11 @@ function autoForm(opts){return {view: function(){
 
       schema.type === Array && m('.box',
         attr.label(name, schema),
-        m('.button.is-success', attr.arrLen(name, 'inc'), '+ Add'),
-        m('.button.is-warning', attr.arrLen(name, 'dec'), '- Rem'),
-        m('.button', afState.arrLen[name]),
+        m('tags',
+          m('tag.is-success', attr.arrLen(name, 'inc'), 'Add+'),
+          m('tag.is-warning', attr.arrLen(name, 'dec'), 'Rem-'),
+          m('tag', afState.arrLen[name]),
+        ),
         _.range(afState.arrLen[name]).map(function(i){
           var childSchema = opts.schema[normal(name)+'.$']
           return inputTypes(name+'.'+i, childSchema)
