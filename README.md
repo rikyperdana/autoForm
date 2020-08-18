@@ -10,7 +10,7 @@ You may take this project as a standalone boilerplate or copy some of it's parts
 This project is composed of functions that returns Mithril virtual DOMs, therefore understanding MithrilJS first is suggested. The `autoForm` function itself only contains of less than 200 lines of code, intededly made simple so you can freely modify this function.
 
 ## Usage Example
-```js
+```javascript
 m(autoForm({
   id: 'testForm',
   action: console.log,
@@ -32,14 +32,20 @@ m(autoForm({
 
 `schema` : A schema-like object that shares similiarity to meteor autoform library as explained in below section.
 #### Optional
+`oncreate`: A function which shall be called right after the form was rendered.
+
+`doc`: An object which shall be used to fill the rendered form for update purpose.
+
 `submit`: An object that may contain `value` and `class` property to style the submit button.
 
 `autoReset`: A boolean value to reset the form content after submission or not. The default is `false`.
 
+`confirmMessage`: A prompt message which shall be displayed to confirm form submission.
+
 ### Schema rules
 A schema-object is an object of key:value pairs where the key represents the fieldName and the value represents the schema.
 The list below shall demonstrate various examples of schema you can define:
-```js
+```
 name: {type: String},
 age: {type: Number, minMax: function(){return [18, 65]}},
 birth: {type: Date},
@@ -70,10 +76,6 @@ education: {type: Array},
 'education.$.name': {type: String, label: 'School/University Name'},
 'education.$.date': {type: Date, label: 'Graduation date'},
 excluded: {type: String, exclude: true},
-'submission_time': {
-  type: Date, optional: true,
-  autoform: {type: 'datetime-local'}
-},
 just_info: {
   type: String,
   autoform: {type: 'readonly'},
