@@ -2,11 +2,15 @@ var m, _, afState = {arrLen: {}, form: {}}
 
 function autoForm(opts){return {view: function(){
   function normal(name){return name.replace(/\d/g, '$')}
-  function ors(array){return array.filter(Boolean)[0]}
+  function ors(array){return array.find(Boolean)}
   function dateValue(timestamp, hour){
     var date = new Date(timestamp),
-    dateStamp = [date.getFullYear(), date.getMonth()+1, date.getDate()].join('-'),
-    zeros = function(num){return num < 10 ? '0'+num : num},
+    zeros = function(num){return num < 10 ? '0'+num : ''+num},
+    dateStamp = [
+      date.getFullYear(),
+      zeros(date.getMonth()+1),
+      zeros(date.getDate())
+    ].join('-'),
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
   }
@@ -24,11 +28,13 @@ function autoForm(opts){return {view: function(){
     )
   }
 
-  afState.form[opts.id] = opts.doc ? linearize(opts.doc) : afState.form[opts.id]
+  afState.form[opts.id] = opts.doc ?
+    linearize(opts.doc) : afState.form[opts.id]
 
   var attr = {
     form: {
       id: opts.id,
+      oncreate: opts.oncreate,
       onchange: function(e){
         e.redraw = false
         afState.form[opts.id] = afState.form[opts.id] || {}
@@ -64,16 +70,19 @@ function autoForm(opts){return {view: function(){
             return _.merge(res, recursive(inc))
           }, {})
         )
-        !opts.confirmMessage ? submit() : confirm(opts.confirmMessage) && submit()
+        !opts.confirmMessage ? submit()
+        : confirm(opts.confirmMessage) && submit()
       }
     },
     arrLen: function(name, type){return {onclick: function(){
-      afState.arrLen[name] = afState.arrLen[name] || 0
+      afState.arrLen[name] = _.get(afState.arrLen, name) || 0
       var dec = afState.arrLen[name] > 0 ? -1 : 0
       afState.arrLen[name] += ({inc: 1, dec})[type]
     }}},
     label: function(name, schema){return m('label.label',
-      m('span', schema.label || _.startCase(name)),
+      m('span', schema.label || _.startCase(
+       name.split('.').map(i => +i+1 ? +i+1 : i).join('.')
+      )),
       m('span', m('b.has-text-danger', !schema.optional && ' *'))
     )}
   }
@@ -123,7 +132,8 @@ function autoForm(opts){return {view: function(){
         {
           name: !schema.exclude ? name : '',
           required: !schema.optional,
-          value: _.get(afState.form, [opts.id, name])
+          value: _.get(afState.form, [opts.id, name]),
+          onchange: schema.autoRedraw && function(){}
         },
         m('option', {value: ''}, '-'),
         schema.autoform.options(name, afState.form[opts.id])
@@ -156,12 +166,15 @@ function autoForm(opts){return {view: function(){
 
       schema.type === Array && m('.box',
         attr.label(name, schema),
-        m('tags',
+        !schema.fixed && m('.tags',
           m('.tag.is-success', attr.arrLen(name, 'inc'), 'Add+'),
           m('.tag.is-warning', attr.arrLen(name, 'dec'), 'Rem-'),
           m('.tag', afState.arrLen[name]),
         ),
-        _.range(afState.arrLen[name]).map(function(i){
+        _.range(
+          _.get(opts.doc, name) && opts.doc[name].length,
+          afState.arrLen[name]
+        ).map(function(i){
           var childSchema = opts.schema[normal(name)+'.$']
           return inputTypes(name+'.'+i, childSchema)
           [_.get(childSchema, 'autoform.type') || 'standard']()
