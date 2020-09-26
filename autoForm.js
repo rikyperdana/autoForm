@@ -226,4 +226,6 @@ function autoForm(opts){return {view: function(){
       (opts.submit && opts.submit.value) || 'Submit'
     ))
   )
-}}}
+}}};
+
+module.exports = autoForm
