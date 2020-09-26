@@ -24,13 +24,16 @@ m(autoForm({
 ```
 
 ## APIs
+
 ### Form options
+
 #### Required
 `id` : Name of the form to be created. Ex: 'myForm'
 
 `action` : A function which shall be called after form submission with a callback. Ex: `function(res){return res}`
 
 `schema` : A schema-like object that shares similiarity to meteor autoform library as explained in below section.
+
 #### Optional
 `oncreate`: A function which shall be called right after the form was rendered.
 
@@ -41,6 +44,15 @@ m(autoForm({
 `autoReset`: A boolean value to reset the form content after submission or not. The default is `false`.
 
 `confirmMessage`: A prompt message which shall be displayed to confirm form submission.
+
+`arangement`: An array of arrays which contain names of top level fields to create a columnized form. Ex:
+```
+  [
+    ['field1', 'field2'],
+    ['field3', 'field4', 'field5'],
+    ['hiddenField1'] // the hidden fields has to be placed last
+  ]
+```
 
 ### Schema rules
 A schema-object is an object of key:value pairs where the key represents the fieldName and the value represents the schema.
