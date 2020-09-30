@@ -17,9 +17,12 @@ m.mount(document.body, {view: () =>
     submit: {value: 'Save', class: 'is-info'},
     autoReset: true,
     confirmMessage: 'Are you sure to submit it?',
-    arangement: [
-      ['name', 'age', 'birth'],
-      ['family', 'siblings']
-    ]
+    arangement: {
+      top: [
+        ['name', 'age', 'birth'],
+        ['family', 'siblings']
+      ],
+      family: [['father', 'mother']]
+    }
   })))
 })
