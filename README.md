@@ -45,13 +45,13 @@ m(autoForm({
 
 `confirmMessage`: A prompt message which shall be displayed to confirm form submission.
 
-`arangement`: An array of arrays which contain names of top level fields to create a columnized form. Ex:
+`arangement`: An object which contain arangement of fields in columnized manner. Ex:
 ```
-  [
+  {top: [
     ['field1', 'field2'],
     ['field3', 'field4', 'field5'],
     ['hiddenField1'] // the hidden fields has to be placed last
-  ]
+  ]}
 ```
 
 ### Schema rules
