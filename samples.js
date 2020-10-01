@@ -1,5 +1,20 @@
 var samples = [
   {
+    short: 'signup', full: 'Sign Up',
+    schema: {
+      fullName: {type: String},
+      username: {type: String},
+      password: {
+        type: String, regExp: ".{8,}",
+        autoform: {type: 'password', help: 'Note: 8 characters minimum'}
+      },
+      email: {
+        type: String, regExp: "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+      }
+    },
+    arangement: {top: [['fullName', 'email'], ['username', 'password']]}
+  },
+  {
     short: 'calc', full: 'BMI Calculator',
     schema: {
       height: {type: Number},

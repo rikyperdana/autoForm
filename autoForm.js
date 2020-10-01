@@ -122,10 +122,11 @@ function autoForm(opts){return {view: function(){
     )},
     password: function(){return m('.field',
       attr.label(name, schema), m('input.input', {
-        name: !schema.exclude ? name : '',
+        name: !schema.exclude ? name : '', pattern: schema.regExp,
         required: !schema.optional, type: 'password',
         placeholder: _.get(schema, 'autoform.placeholder')
-      })
+      }),
+      m('p.help', _.get(schema, 'autoform.help'))
     )},
     select: function(){return m('.field.is-expanded',
       attr.label(name, schema),
