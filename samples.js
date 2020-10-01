@@ -7,16 +7,37 @@ var samples = [
       'personal.dob': {type: Date, label: 'Date of birth'},
       'personal.address': {type: String, label: 'Home address', optional: true},
       'personal.phone': {type: Number, label: 'Phone number', optional: true},
-      'personal.gender': {type: Number, label: 'Gender', optional: true},
+      'personal.gender': {type: Number, label: 'Gender', optional: true, autoform: {
+        type: 'select', options: () => ['male', 'female'].map((val, key) => ({
+          value: key, label: _.startCase(val)
+        }))
+      }},
       'personal.nationality': {type: String, label: 'Nationality', optional: true},
-      education: {type: Array},
-      'education.$': {type: Object},
-      'education.$.institution': {type: String},
-      'education.$.entry': {type: Date, label: 'Entry year'},
-      'education.$.complete': {type: Date, label: 'Year completed'},
-      // professional skills
-      // work experiences
-      // achievements
+      educations: {type: Array},
+      'educations.$': {type: Object},
+      'educations.$.institution': {type: String},
+      'educations.$.entry': {type: Date, label: 'Entry year'},
+      'educations.$.complete': {type: Date, label: 'Year completed'},
+      skills: {type: Array},
+      'skills.$': {type: String},
+      works: {type: Array},
+      'works.$': {type: Object},
+      'works.$.place': {type: String},
+      'works.$.from': {type: Date},
+      'works.$.to': {type: Date},
+      achievements: {type: Array},
+      'achievements.$': {type: String}
+    },
+    arangement: {
+      top: [
+        ['personal'],
+        ['educations', 'skills'],
+        ['works', 'achievements']
+      ],
+      personal: [
+        ['name', 'gender', 'dob'],
+        ['address', 'phone', 'nationality']
+      ]
     }
   }
 ]
