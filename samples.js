@@ -69,5 +69,6 @@ _.assign(comp, {samples: () => m('.content',
       }
     }, m.redraw()]},
     m('li', i.full)
-  )))
+  ))),
+  m('p.help', 'Note: Every sample source code are stored in ./samples.js')
 )})
