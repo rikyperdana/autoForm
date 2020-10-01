@@ -3,7 +3,9 @@ var m, _, autoForm, state = {}, comp = {}
 _.assign(comp, {
   navbar: () => m('nav.navbar.is-primary.is-fixed-top',
     m('.navbar-brand',
-      m('a.navbar-item', 'AutoForm'),
+      m('a.navbar-item', {
+        onclick: () => state.route = 'dashboard'
+      }, 'AutoForm'),
       m('.navbar-burger',
         {
           role: 'button', class: state.burgerMenu && 'is-active',
@@ -14,11 +16,13 @@ _.assign(comp, {
     ),
     m('.navbar-menu',
       m('.navbar-start',
-        ['demo', 'samples'].map(i =>
+        ['samples'].map(i =>
           m('a.navbar-item',
-            {onclick: () => _.assign(state, {
-              route: i, burgerMenu: null
-            })},
+            {onclick: () => [
+              _.assign(state, {
+                route: i, burgerMenu: null
+              }), m.redraw()
+            ]},
             m('span', _.startCase(i))
           )
         )
