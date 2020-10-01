@@ -1,5 +1,20 @@
 var samples = [
   {
+    title: 'Seconds Counter',
+    schema: {
+      start: {type: Number, autoform: {type: 'datetime-local'}},
+      end: {type: Number, autoform: {type: 'datetime-local'}, autoRedraw: true},
+      difference: {
+        type: Number, label: 'Difference in seconds',
+        autoform: {type: 'readonly'},
+        autoValue: (name, doc) =>
+          doc && (doc.start && doc.end) &&
+          (+(new Date(doc.end)) - +(new Date(doc.start))) / 1000
+      }
+    },
+    arangement: {top: [['start', 'end', 'difference']]}
+  },
+  {
     title: 'Animal Species',
     schema: {
       animal: {type: Array},

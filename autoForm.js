@@ -108,6 +108,7 @@ function autoForm(opts){return {view: function(){
         name: !schema.exclude ? name: '',
         required: !schema.optional,
         value: dateValue(_.get(afState.form, [opts.id, name]), true),
+        onchange: schema.autoRedraw && function(){}
       }))
     )},
     textarea: function(){return m('.field',
@@ -118,13 +119,15 @@ function autoForm(opts){return {view: function(){
         value: _.get(afState.form, [opts.id, name]),
         placeholder: _.get(schema, 'autoform.placeholder'),
         rows: _.get(schema, 'autoform.rows') || 6,
+        onchange: schema.autoRedraw && function(){}
       })
     )},
     password: function(){return m('.field',
       attr.label(name, schema), m('input.input', {
         name: !schema.exclude ? name : '', pattern: schema.regExp,
         required: !schema.optional, type: 'password',
-        placeholder: _.get(schema, 'autoform.placeholder')
+        placeholder: _.get(schema, 'autoform.placeholder'),
+        onchange: schema.autoRedraw && function(){}
       }),
       m('p.help', _.get(schema, 'autoform.help'))
     )},
