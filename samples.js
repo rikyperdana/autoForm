@@ -1,5 +1,20 @@
 var samples = [
   {
+    short: 'calc', full: 'BMI Calculator',
+    schema: {
+      height: {type: Number},
+      weight: {type: Number, autoRedraw: true},
+      bmi: {
+        type: Number, label: 'BMI Index',
+        autoform: {type: 'readonly'},
+        autoValue: (name, doc) => doc && Math.floor(
+          +doc.weight / (Math.pow(+doc.height, 2)) * 1e6
+        ) / 100
+      }
+    },
+    arangement: {top: [['height', 'weight', 'bmi']]}
+  },
+  {
     short: 'cv', full: 'Curriculum Vitae',
     schema: {
       personal: {type: Object},
