@@ -13,7 +13,10 @@ var samples = [
       'education.$': {type: Object},
       'education.$.institution': {type: String},
       'education.$.entry': {type: Date, label: 'Entry year'},
-      'education.$.complete': {type: Date, label: 'Year completed'}
+      'education.$.complete': {type: Date, label: 'Year completed'},
+      // professional skills
+      // work experiences
+      // achievements
     }
   }
 ]
@@ -21,14 +24,14 @@ var samples = [
 _.assign(comp, {samples: () => m('.content',
   m('h1', 'Sample forms'),
   m('ul', samples.map(i => m('a',
-    {onclick: state = {
+    {onclick: () => [state = {
       route: 'dashboard', doc: {
         schema: _.map(i.schema, (val, key) => ({
           [key]: _.assign(val, {type: val.type.name})
         })).reduce((acc, inc) => _.merge(acc, inc), {}),
         arangement: i.arangement
       }
-    }},
+    }, m.redraw()]},
     m('li', i.full)
   )))
 )})
