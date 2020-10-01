@@ -31,7 +31,6 @@ _.assign(comp, {
   ),
 
   dashboard: () => m('.content',
-    m('h1', 'Creator demo'),
     state.schema && [
       m('label.label', m('span', 'Generated form')),
       m('.box', m(autoForm({
@@ -44,7 +43,7 @@ _.assign(comp, {
     ],
     m('.columns',
       state.schema && m('.column', m('form',
-        m('label.label', m('span', 'Result')),
+        m('label.label', m('span', 'Submited result')),
         m('textarea.textarea', {
           rows: 16,
           value: JSON.stringify(
@@ -72,10 +71,12 @@ _.assign(comp, {
         doc: {
           schema: JSON.stringify({
             name: {type: 'String'},
-            age: {type: 'Number', optional: true}
+            dob: {type: 'Date', label: 'Date of birth'},
+            phone: {type: 'Number', optional: true},
+            address: {type: 'String', optional: true}
           }, null, 4),
           arangement: JSON.stringify({
-            top: [['name', 'age']]
+            top: [['name', 'dob', 'phone'], ['address']]
           }, null, 4)
         },
         action: doc => _.assign(state, {

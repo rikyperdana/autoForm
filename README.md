@@ -9,6 +9,13 @@ AutoForm is a remake of Meteor AutoForm library that serves similiar purpose of 
 You may take this project as a standalone boilerplate or copy some of it's parts to be included in your project or anything you see fit.
 This project is composed of functions that returns Mithril virtual DOMs, therefore understanding MithrilJS first is suggested. The `autoForm` function itself only contains of less than 200 lines of code, intededly made simple so you can freely modify this function.
 
+## Quickstart
+```
+npm install -g live-server
+git clone https://github.com/rikyperdana/autoform
+live-server
+```
+
 ## Usage Example
 ```javascript
 m(autoForm({
