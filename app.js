@@ -3,10 +3,7 @@ var m, _, autoForm, state = {}, comp = {}
 _.assign(comp, {
   navbar: () => m('nav.navbar.is-primary.is-fixed-top',
     m('.navbar-brand',
-      m('a.navbar-item',
-        {href: "https://github.com/rikyperdana/autoform"},
-        'AutoForm'
-      ),
+      m('a.navbar-item', 'AutoForm'),
       m('.navbar-burger',
         {
           role: 'button', class: state.burgerMenu && 'is-active',
@@ -45,7 +42,7 @@ _.assign(comp, {
       state.schema && m('.column', m('form',
         m('label.label', m('span', 'Submited result')),
         m('textarea.textarea', {
-          rows: 16,
+          rows: 17,
           value: JSON.stringify(
             state.formResult || {},
             null, 4
@@ -57,25 +54,30 @@ _.assign(comp, {
         schema: {
           schema: {
             type: String, autoform: {
-              type: 'textarea', rows: 16
+              type: 'textarea', rows: 17
             }
           },
           arangement: {
             type: String, optional: true,
             label: 'Arangement (optional)',
-            autoform: {type: 'textarea', rows: 16}
+            autoform: {type: 'textarea', rows: 17}
           }
         },
         arangement: {top: [['schema', 'arangement']]},
         submit: {value: 'Render'},
+        // allow doc to contain selected samples
         doc: {
-          schema: JSON.stringify({
+          schema: state.doc ?
+          JSON.stringify(state.doc.schema, null, 4)
+          : JSON.stringify({
             name: {type: 'String'},
             dob: {type: 'Date', label: 'Date of birth'},
             phone: {type: 'Number', optional: true},
             address: {type: 'String', optional: true}
           }, null, 4),
-          arangement: JSON.stringify({
+          arangement: state.doc ?
+          JSON.stringify(state.doc.arangement)
+          : JSON.stringify({
             top: [['name', 'dob', 'phone'], ['address']]
           }, null, 4)
         },
@@ -83,7 +85,7 @@ _.assign(comp, {
           schema: _.map(JSON.parse(doc.schema), (val, key) =>
             ({[key]: _.assign(val, {type: eval(val.type)})})
           ).reduce((acc, inc) => _.merge(acc, inc), {}),
-          arangement: JSON.parse(doc.arangement)
+          arangement: doc.arangement && JSON.parse(doc.arangement)
         })
       })))
     )
