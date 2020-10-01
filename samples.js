@@ -1,6 +1,28 @@
 var samples = [
   {
-    short: 'signup', full: 'Sign Up',
+    title: 'Animal Species',
+    schema: {
+      animal: {type: Array},
+      'animal.$': {type: Object},
+      'animal.$.class': {
+        type: String, autoRedraw: true, autoform: {
+          type: 'select', options: () => _.keys(animals).map(
+            i => ({value: i, label: _.startCase(i)})
+          )
+        }
+      },
+      'animal.$.family': {type: String, autoform: {
+        type: 'select', options: (name, doc) =>
+          (animals[
+            _.get(doc, 'animal.'+name.split('.')[1]+'.class')
+          ] || [])
+          .map(i => ({value: i, label: _.startCase(i)}))
+      }},
+      'animal.$.species': {type: String}
+    }
+  },
+  {
+    title: 'Sign Up',
     schema: {
       fullName: {type: String},
       username: {type: String},
@@ -15,7 +37,7 @@ var samples = [
     arangement: {top: [['fullName', 'email'], ['username', 'password']]}
   },
   {
-    short: 'calc', full: 'BMI Calculator',
+    title: 'BMI Calculator',
     schema: {
       height: {type: Number},
       weight: {type: Number, autoRedraw: true},
@@ -30,7 +52,7 @@ var samples = [
     arangement: {top: [['height', 'weight', 'bmi']]}
   },
   {
-    short: 'cv', full: 'Curriculum Vitae',
+    title: 'Curriculum Vitae',
     schema: {
       personal: {type: Object},
       'personal.name': {type: String, label: 'Full Name'},
@@ -83,7 +105,13 @@ _.assign(comp, {samples: () => m('.content',
         arangement: i.arangement
       }
     }, m.redraw()]},
-    m('li', i.full)
+    m('li', i.title)
   ))),
   m('p.help', 'Note: Every sample source code are stored in ./samples.js')
 )})
+
+// list of animals for Animal Species form
+var animals = {
+  mammal: ['dog', 'cat', 'monkey'],
+  birds: ['duck', 'chicken', 'pigeon']
+}
