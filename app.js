@@ -1,4 +1,5 @@
-var m, _, autoForm, state = {}, comp = {}
+var m, _, autoForm, state = {}, comp = {},
+ors = array => array.find(Boolean)
 
 _.assign(comp, {
   navbar: () => m('nav.navbar.is-primary.is-fixed-top',
@@ -72,7 +73,11 @@ _.assign(comp, {
         // allow doc to contain selected samples
         doc: {
           schema: state.doc ?
-          JSON.stringify(state.doc.schema, null, 4)
+          JSON.stringify(
+            state.doc.schema,
+            (key, val) => typeof(val) === 'function' ? val+'' : val
+            , 4
+          )
           : JSON.stringify({
             name: {type: 'String'},
             dob: {type: 'Date', label: 'Date of birth'},
@@ -80,15 +85,23 @@ _.assign(comp, {
             address: {type: 'String', optional: true}
           }, null, 4),
           arangement: state.doc ?
-          JSON.stringify(state.doc.arangement)
+          JSON.stringify(state.doc.arangement, null, 4)
           : JSON.stringify({
             top: [['name', 'dob', 'phone'], ['address']]
           }, null, 4)
         },
         action: doc => _.assign(state, {
-          schema: _.map(JSON.parse(doc.schema), (val, key) =>
-            ({[key]: _.assign(val, {type: eval(val.type)})})
-          ).reduce((acc, inc) => _.merge(acc, inc), {}),
+          schema: JSON.parse(
+            doc.schema,
+            (key, val) => ors([
+              key === 'options' && eval(val),
+              val === 'String' && String,
+              val === 'Number' && Number,
+              val === 'Date' && Date,
+              val === 'Object' && Object,
+              val === 'Array' && Array
+            ]) || val
+          ),
           arangement: doc.arangement && JSON.parse(doc.arangement)
         })
       })))
