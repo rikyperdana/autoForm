@@ -137,7 +137,6 @@ function autoForm(opts){return {view: function(){
           onchange: schema.autoRedraw && function(){}
         },
         m('option', {value: ''}, '-'),
-        [console.log(schema.autoform)] &&
         schema.autoform.options(name, afState.form[opts.id])
         .map(function(i){return m('option', {
           value: i.value,
