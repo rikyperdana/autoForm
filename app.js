@@ -95,6 +95,7 @@ _.assign(comp, {
             doc.schema,
             (key, val) => ors([
               key === 'options' && eval(val),
+              key === 'autoValue' && eval(val),
               val === 'String' && String,
               val === 'Number' && Number,
               val === 'Date' && Date,
@@ -104,7 +105,7 @@ _.assign(comp, {
           ),
           arangement: doc.arangement && JSON.parse(doc.arangement)
         })
-      })))
+      })), m('p.help', "Notice: If you're going to copy the schema into your project, then make sure that you follow the formating in the repository Readme page. Because only copy/paste isn't going to work."))
     )
   )
 })
