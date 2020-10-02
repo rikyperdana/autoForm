@@ -94,6 +94,7 @@ education: {type: Array},
 'education.$': {type: Object},
 'education.$.name': {type: String, label: 'School/University Name'},
 'education.$.date': {type: Date, label: 'Graduation date'},
+entry_time: {type: Date, autoform: {type: 'datetime-local'}},
 excluded: {type: String, exclude: true},
 just_info: {
   type: String,
