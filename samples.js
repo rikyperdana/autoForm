@@ -2,8 +2,8 @@ var samples = [
   {
     title: 'Seconds Counter',
     schema: {
-      start: {type: Number, autoform: {type: 'datetime-local'}},
-      end: {type: Number, autoform: {type: 'datetime-local'}, autoRedraw: true},
+      start: {type: Date, autoform: {type: 'datetime-local'}},
+      end: {type: Date, autoform: {type: 'datetime-local'}, autoRedraw: true},
       difference: {
         type: Number, label: 'Difference in seconds',
         autoform: {type: 'readonly'},
@@ -28,9 +28,9 @@ var samples = [
       },
       'animal.$.family': {type: String, autoform: {
         type: 'select', options: (name, doc) =>
-          (animals[
-            _.get(doc, 'animal.'+name.split('.')[1]+'.class')
-          ] || [])
+          (animals[_.get(
+            doc, 'animal.'+name.split('.')[1]+'.class'
+          )] || [])
           .map(i => ({value: i, label: _.startCase(i)}))
       }},
       'animal.$.species': {type: String}

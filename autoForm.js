@@ -99,7 +99,8 @@ function autoForm(opts){return {view: function(){
       m('input.input', {
         readonly: true, name: !schema.exclude ? name : '', disabled: true,
         value: schema.autoValue(name, afState.form[opts.id], opts)
-      })
+      }),
+      m('p.help', _.get(schema, 'autoform.help'))
     )},
     "datetime-local": function(){return m('.field',
       attr.label(name, schema),
@@ -109,7 +110,8 @@ function autoForm(opts){return {view: function(){
         required: !schema.optional,
         value: dateValue(_.get(afState.form, [opts.id, name]), true),
         onchange: schema.autoRedraw && function(){}
-      }))
+      })),
+      m('p.help', _.get(schema, 'autoform.help'))
     )},
     textarea: function(){return m('.field',
       attr.label(name, schema),
@@ -120,7 +122,8 @@ function autoForm(opts){return {view: function(){
         placeholder: _.get(schema, 'autoform.placeholder'),
         rows: _.get(schema, 'autoform.rows') || 6,
         onchange: schema.autoRedraw && function(){}
-      })
+      }),
+      m('p.help', _.get(schema, 'autoform.help'))
     )},
     password: function(){return m('.field',
       attr.label(name, schema), m('input.input', {
