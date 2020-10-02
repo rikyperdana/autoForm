@@ -16,6 +16,7 @@ _.assign(comp, {
       )
     ),
     m('.navbar-menu',
+      {class: state.burgerMenu && 'is-active'},
       m('.navbar-start',
         ['samples'].map(i =>
           m('a.navbar-item',
