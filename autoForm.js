@@ -167,15 +167,15 @@ function autoForm(opts){return {view: function(){
           }).map(function(i){
             var childSchema = opts.schema[normal(i.name)],
             fieldName = name+'.'+_.last(i.name.split('.'))
-            return {
-              [fieldName]: () => inputTypes(fieldName, childSchema)[
-                _.get(childSchema, 'autoform.type') || 'standard'
-              ]()
+            return {[fieldName]: () =>
+              inputTypes(fieldName, childSchema)
+              [_.get(childSchema, 'autoform.type') || 'standard']()
             }
           }),
           fields =>
-            _.get(opts.arangement, name) ?
-            opts.arangement[name].map(i => m('.columns',
+            _.get(opts.arangement, name.replace(/[0-9]/g, '$')) ?
+            opts.arangement[name.replace(/[0-9]/g, '$')]
+            .map(i => m('.columns',
               i.map(j => m('.column',
                 fields.find(k => k[name+'.'+j])[name+'.'+j]()
               ))
