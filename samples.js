@@ -34,6 +34,9 @@ var samples = [
           .map(i => ({value: i, label: _.startCase(i)}))
       }},
       'animal.$.species': {type: String}
+    },
+    arangement: {
+      'animal.$': [['class', 'family', 'species']]
     }
   },
   {
@@ -58,7 +61,7 @@ var samples = [
       weight: {type: Number, autoRedraw: true},
       bmi: {
         type: Number, label: 'BMI Index',
-        autoform: {type: 'readonly'},
+        autoform: {type: 'readonly'}, exclude: true,
         autoValue: (name, doc) => doc && Math.floor(
           +doc.weight / (Math.pow(+doc.height, 2)) * 1e6
         ) / 100
