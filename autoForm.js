@@ -1,12 +1,12 @@
 var m, _, afState = {arrLen: {}, form: {}}
 
 function autoForm(opts){return {view: function(){
-  function normal(name){return name.replace(/\d/g, '$')}
-  function withThis(obj, cb){return cb(obj)}
-  function ors(array){return array.find(Boolean)}
-  function dateValue(timestamp, hour){
+  var normal = name => name.replace(/\d/g, '$'),
+  withThis = (obj, cb) => cb(obj),
+  ors = array => array.find(Boolean)
+  dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
-    zeros = function(num){return num < 10 ? '0'+num : ''+num},
+    zeros = num => num < 10 ? '0'+num : ''+num,
     dateStamp = [
       date.getFullYear(),
       zeros(date.getMonth()+1),
@@ -14,18 +14,19 @@ function autoForm(opts){return {view: function(){
     ].join('-'),
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
-  }
+  },
 
-  function linearize(obj){
-    function recurse(doc){
+  linearize = obj => {
+    var recurse = doc => {
       var value = doc[_.keys(doc)[0]]
-      return typeof(value) === 'object' ? _.map(value, function(val, key){
-        return recurse({[_.keys(doc)[0]+'.'+key]: val})
-      }) : doc
+      return typeof(value) === 'object' ?
+      _.map(value, (val, key) => recurse(
+        {[_.keys(doc)[0]+'.'+key]: val}
+      )) : doc
     }
     return _.fromPairs(
       _.flattenDeep(recurse({doc: obj}))
-      .map(function(i){return [_.keys(i)[0].substr(4), _.values(i)[0]]})
+      .map(i => [_.keys(i)[0].substr(4), _.values(i)[0]])
     )
   }
 
@@ -36,38 +37,38 @@ function autoForm(opts){return {view: function(){
     form: {
       id: opts.id,
       oncreate: opts.oncreate,
-      onchange: function(e){
-        e.redraw = false
-        afState.form[opts.id] = afState.form[opts.id] || {}
+      onchange: e => [
+        e.redraw = false,
+        afState.form[opts.id] = afState.form[opts.id] || {},
         afState.form[opts.id][e.target.name] = e.target.value
-      },
+      ],
       onsubmit: function(e){
         e.preventDefault()
         afState.form[opts.id] = opts.autoReset && null
         var submit = () => opts.action(
-          _.filter(e.target, function(i){return i.name && i.value})
-          .map(function(obj){
+          _.filter(e.target, i => i.name && i.value)
+          .map(obj => {
             var type = opts.schema[normal(obj.name)].type
             return _.reduceRight(
               obj.name.split('.'),
-              function(res, inc){return {[inc]: res}},
+              (res, inc) => ({[inc]: res}),
               obj.value && [ // value conversion
                 ((type === String) && obj.value),
                 ((type === Number) && +(obj.value)),
                 ((type === Date) && (new Date(obj.value)).getTime())
-              ].filter(function(i){return !!i})[0]
+              ].find(i => !!i)
             )
-          }).reduce(function(res, inc){
-            function recursive(inc){return ors([
+          }).reduce((res, inc) => {
+            var recursive = inc => ors([
               typeof(inc) === 'object' && ors([
                 +_.keys(inc)[0]+1 &&
-                _.range(+_.keys(inc)[0]+1).map(function(i){
-                  return i === +_.keys(inc)[0] ?
+                _.range(+_.keys(inc)[0]+1).map(i =>
+                  i === +_.keys(inc)[0] ?
                   recursive(_.values(inc)[0]) : undefined
-                }),
+                ),
                 {[_.keys(inc)[0]]: recursive(_.values(inc)[0])}
               ]), inc
-            ])}
+            ])
             return _.merge(res, recursive(inc))
           }, {})
         )
