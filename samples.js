@@ -107,7 +107,12 @@ var samples = [
       personal: [
         ['name', 'gender', 'dob'],
         ['address', 'phone', 'nationality']
-      ]
+      ],
+      'educations.$': [
+        ['institution'],
+        ['entry', 'complete']
+      ],
+      'works.$': [['place'], ['from', 'to']]
     }
   }
 ]
