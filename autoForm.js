@@ -1,6 +1,6 @@
-var m, _, afState = {arrLen: {}, form: {}}
+var m, _, afState = {arrLen: {}, form: {}},
 
-function autoForm(opts){return {view: function(){
+autoForm = opts => ({view: () => {
   var normal = name => name.replace(/\d/g, '$'),
   withThis = (obj, cb) => cb(obj),
   ors = array => array.find(Boolean)
@@ -76,34 +76,36 @@ function autoForm(opts){return {view: function(){
         : confirm(opts.confirmMessage) && submit()
       }
     },
-    arrLen: function(name, type){return {onclick: function(){
+    arrLen: (name, type) => ({onclick: () => {
       afState.arrLen[name] = _.get(afState.arrLen, name) || 0
       var dec = afState.arrLen[name] > 0 ? -1 : 0
       afState.arrLen[name] += ({inc: 1, dec})[type]
-    }}},
-    label: function(name, schema){return m('label.label',
+    }}),
+    label: (name, schema) => m('label.label',
       m('span', schema.label || _.startCase(
        name.split('.').map(i => +i+1 ? +i+1 : i).join('.')
       )),
       m('span', m('b.has-text-danger', !schema.optional && ' *'))
-    )}
-  }
+    )
+  },
 
-  function inputTypes(name, schema){return {
-    hidden: function(){return m('input.input', {
+  inputTypes = (name, schema) => ({
+    hidden: () => m('input.input', {
       type: 'hidden', name: !schema.exclude ? name : '',
       value: schema.autoValue &&
         schema.autoValue(name, afState.form[opts.id], opts)
-    })},
-    readonly: function(){return m('.field',
+    }),
+
+    readonly: () => m('.field',
       attr.label(name, schema),
       m('input.input', {
         readonly: true, name: !schema.exclude ? name : '', disabled: true,
         value: schema.autoValue(name, afState.form[opts.id], opts)
       }),
       m('p.help', _.get(schema, 'autoform.help'))
-    )},
-    "datetime-local": function(){return m('.field',
+    ),
+
+    "datetime-local": () => m('.field',
       attr.label(name, schema),
       m('.control', m('input.input', {
         type: 'datetime-local',
@@ -113,8 +115,9 @@ function autoForm(opts){return {view: function(){
         onchange: schema.autoRedraw && function(){}
       })),
       m('p.help', _.get(schema, 'autoform.help'))
-    )},
-    textarea: function(){return m('.field',
+    ),
+
+    textarea: () => m('.field',
       attr.label(name, schema),
       m('textarea.textarea', {
         name: !schema.exclude ? name : '',
@@ -125,8 +128,9 @@ function autoForm(opts){return {view: function(){
         onchange: schema.autoRedraw && function(){}
       }),
       m('p.help', _.get(schema, 'autoform.help'))
-    )},
-    password: function(){return m('.field',
+    ),
+
+    password: () => m('.field',
       attr.label(name, schema), m('input.input', {
         name: !schema.exclude ? name : '', pattern: schema.regExp,
         required: !schema.optional, type: 'password',
@@ -134,8 +138,9 @@ function autoForm(opts){return {view: function(){
         onchange: schema.autoRedraw && function(){}
       }),
       m('p.help', _.get(schema, 'autoform.help'))
-    )},
-    select: function(){return m('.field.is-expanded',
+    ),
+
+    select: () => m('.field.is-expanded',
       attr.label(name, schema),
       m('.select.is-fullwidth', m('select',
         {
@@ -146,26 +151,27 @@ function autoForm(opts){return {view: function(){
         },
         m('option', {value: ''}, '-'),
         schema.autoform.options(name, afState.form[opts.id])
-        .map(function(i){return m('option', {
+        .map(i => m('option', {
           value: i.value,
           selected: !!_.get(afState.form, [opts.id, name])
-        }, i.label)})
+        }, i.label))
       )),
       m('p.help', _.get(schema, 'autoform.help'))
-    )},
+    ),
+
     standard: function(){return ors([
       schema.type === Object && m('.box',
         attr.label(name, schema),
         withThis(
-          _.map(opts.schema, function(val, key){
-            return _.merge(val, {name: key})
-          }).filter(function(i){
-            function getLen(str){return _.size(_.split(str, '.'))};
+          _.map(opts.schema, (val, key) =>
+            _.merge(val, {name: key})
+          ).filter(i => {
+            var getLen = str => _.size(_.split(str, '.'))
             return _.every([
               _.includes(i.name, normal(name)+'.'),
               getLen(name)+1 === getLen(i.name)
             ])
-          }).map(function(i){
+          }).map(i => {
             var childSchema = opts.schema[normal(i.name)],
             fieldName = name+'.'+_.last(i.name.split('.'))
             return {[fieldName]: () =>
@@ -195,7 +201,7 @@ function autoForm(opts){return {view: function(){
         _.range(
           _.get(opts.doc, name) && opts.doc[name].length,
           afState.arrLen[name]
-        ).map(function(i){
+        ).map(i => {
           var childSchema = opts.schema[normal(name)+'.$']
           return inputTypes(name+'.'+i, childSchema)
           [_.get(childSchema, 'autoform.type') || 'standard']()
@@ -221,21 +227,21 @@ function autoForm(opts){return {view: function(){
           onchange: schema.autoRedraw && function(){},
           type: _.get(
             [[Date, 'date'], [String, 'text'], [Number, 'number']]
-            .filter(function(i){return i[0] === schema.type})[0], '1'
+            .filter(i => i[0] === schema.type)[0], '1'
           ),
         })),
         m('p.help', _.get(schema, 'autoform.help'))
       )
     ])},
-  }}
+  }),
 
-  var fields = _.map(opts.schema, function(val, key){
-    return !_.includes(key, '.') && {
+  fields = _.map(opts.schema, (val, key) =>
+    !_.includes(key, '.') && {
       [key]: () => inputTypes(key, val)[
         _.get(val, 'autoform.type') || 'standard'
       ]()
     }
-  }).filter(Boolean)
+  ).filter(Boolean)
 
   return m('form', attr.form,
     _.get(opts, 'arangement.top') ?
@@ -247,4 +253,4 @@ function autoForm(opts){return {view: function(){
       (opts.submit && opts.submit.value) || 'Submit'
     ))
   )
-}}}
+}})
