@@ -52,7 +52,7 @@ m(autoForm({
 
 `confirmMessage`: A prompt message which shall be displayed to confirm form submission.
 
-`arangement`: An object which contain arangement of fields in columnized manner. Ex:
+`layout`: An object which contain layout of fields in columnized manner. Ex:
 ```
   {top: [
     ['field1', 'field2'],
