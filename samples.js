@@ -12,7 +12,7 @@ var samples = [
           (+(new Date(doc.end)) - +(new Date(doc.start))) / 1000
       }
     },
-    arangement: {top: [['start', 'end', 'difference']]}
+    layout: {top: [['start', 'end', 'difference']]}
   },
   {
     title: 'Animal Species',
@@ -35,7 +35,7 @@ var samples = [
       }},
       'animal.$.species': {type: String}
     },
-    arangement: {
+    layout: {
       'animal.$': [['class', 'family', 'species']]
     }
   },
@@ -52,7 +52,7 @@ var samples = [
         type: String, regExp: "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
       }
     },
-    arangement: {top: [['fullName', 'email'], ['username', 'password']]}
+    layout: {top: [['fullName', 'email'], ['username', 'password']]}
   },
   {
     title: 'BMI Calculator',
@@ -67,7 +67,7 @@ var samples = [
         ) / 100
       }
     },
-    arangement: {top: [['height', 'weight', 'bmi']]}
+    layout: {top: [['height', 'weight', 'bmi']]}
   },
   {
     title: 'Curriculum Vitae',
@@ -98,7 +98,7 @@ var samples = [
       achievements: {type: Array},
       'achievements.$': {type: String}
     },
-    arangement: {
+    layout: {
       top: [
         ['personal'],
         ['educations', 'skills'],
@@ -125,7 +125,7 @@ _.assign(comp, {samples: () => m('.content',
         schema: _.map(i.schema, (val, key) => ({
           [key]: _.assign(val, {type: val.type.name})
         })).reduce((acc, inc) => _.merge(acc, inc), {}),
-        arangement: i.arangement
+        layout: i.layout
       }
     }, m.redraw()]},
     m('li', i.title)

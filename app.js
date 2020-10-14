@@ -39,7 +39,7 @@ _.assign(comp, {
       m('.box', m(autoForm({
         id: 'renderedForm',
         schema: state.schema,
-        arangement: state.arangement,
+        layout: state.layout,
         action: doc => state.formResult = doc,
         submit: {class: 'is-success'}
       })))
@@ -63,13 +63,13 @@ _.assign(comp, {
               type: 'textarea', rows: 17
             }
           },
-          arangement: {
+          layout: {
             type: String, optional: true,
-            label: 'Arangement (optional)',
+            label: 'Layout (optional)',
             autoform: {type: 'textarea', rows: 17}
           }
         },
-        arangement: {top: [['schema', 'arangement']]},
+        layout: {top: [['schema', 'layout']]},
         submit: {value: 'Render'},
         // allow doc to contain selected samples
         doc: {
@@ -85,8 +85,8 @@ _.assign(comp, {
             phone: {type: 'Number', optional: true},
             address: {type: 'String', optional: true}
           }, null, 4),
-          arangement: state.doc ?
-          JSON.stringify(state.doc.arangement, null, 4)
+          layout: state.doc ?
+          JSON.stringify(state.doc.layout, null, 4)
           : JSON.stringify({
             top: [['name', 'dob', 'phone'], ['address']]
           }, null, 4)
@@ -104,7 +104,7 @@ _.assign(comp, {
               val === 'Array' && Array
             ]) || val
           ),
-          arangement: doc.arangement && JSON.parse(doc.arangement)
+          layout: doc.layout && JSON.parse(doc.layout)
         })
       })), m('p.help', "Notice: If you're going to copy the schema into your project, then make sure that you follow the formating in the repository Readme page. Because only copy/paste isn't going to work."))
     )
