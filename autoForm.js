@@ -182,12 +182,11 @@ autoForm = opts => ({view: () => {
             }
           }),
           fields =>
-            _.get(opts.layout, name.replace(/[0-9]/g, '$')) ?
-            opts.layout[name.replace(/[0-9]/g, '$')]
-            .map(i => m('.columns',
-              i.map(j => m('.column',
-                fields.find(k => k[name+'.'+j])[name+'.'+j]()
-              ))
+            _.get(opts.layout, normal(name)) ?
+            opts.layout[normal(name)].map(i => m('.columns',
+              i.map(j => m('.column', fields.find(
+                k => k[name+'.'+j]
+              )[name+'.'+j]()))
             )) : fields.map(i => _.values(i)[0]())
         ),
         m('p.help', _.get(schema, 'autoform.help'))
@@ -249,10 +248,10 @@ autoForm = opts => ({view: () => {
     _.get(opts, 'layout.top') ?
     opts.layout.top.map(i => m('.columns', i.map(
       j => m('.column', fields.find(k => k[j])[j]())
-    ))) : fields.map(i => Object.values(i)[0]()),
+    ))) : fields.map(i => _.values(i)[0]()),
     m('.row', m('button.button',
       _.assign({type: 'submit', class: 'is-info'}, opts.submit),
-      (opts.submit && opts.submit.value) || 'Submit'
+      _.get(opts, 'submit.value') || 'Submit'
     ))
   )
 }})
