@@ -3,7 +3,7 @@ var m, _, afState = {arrLen: {}, form: {}},
 autoForm = opts => ({view: () => {
   var normal = name => name.replace(/\d/g, '$'),
   withThis = (obj, cb) => cb(obj),
-  ors = array => array.find(Boolean)
+  ors = array => array.find(Boolean),
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
     zeros = num => num < 10 ? '0'+num : ''+num,
@@ -182,12 +182,11 @@ autoForm = opts => ({view: () => {
             }
           }),
           fields =>
-            _.get(opts.layout, name.replace(/[0-9]/g, '$')) ?
-            opts.layout[name.replace(/[0-9]/g, '$')]
-            .map(i => m('.columns',
-              i.map(j => m('.column',
-                fields.find(k => k[name+'.'+j])[name+'.'+j]()
-              ))
+            _.get(opts.layout, normal(name)) ?
+            opts.layout[normal(name)].map(i => m('.columns',
+              i.map(j => m('.column', fields.find(
+                k => k[name+'.'+j]
+              )[name+'.'+j]()))
             )) : fields.map(i => _.values(i)[0]())
         ),
         m('p.help', _.get(schema, 'autoform.help'))
@@ -205,8 +204,9 @@ autoForm = opts => ({view: () => {
           afState.arrLen[name]
         ).map(i => {
           var childSchema = opts.schema[normal(name)+'.$']
-          return inputTypes(name+'.'+i, childSchema)
-          [_.get(childSchema, 'autoform.type') || 'standard']()
+          return inputTypes(name+'.'+i, childSchema)[
+            _.get(childSchema, 'autoform.type') || 'standard'
+          ]()
         }),
         m('p.help', _.get(schema, 'autoform.help'))
       ),
@@ -229,7 +229,7 @@ autoForm = opts => ({view: () => {
           onchange: schema.autoRedraw && function(){},
           type: _.get(
             [[Date, 'date'], [String, 'text'], [Number, 'number']]
-            .filter(i => i[0] === schema.type)[0], '1'
+            .find(i => i[0] === schema.type), '1'
           ),
         })),
         m('p.help', _.get(schema, 'autoform.help'))
@@ -249,10 +249,10 @@ autoForm = opts => ({view: () => {
     _.get(opts, 'layout.top') ?
     opts.layout.top.map(i => m('.columns', i.map(
       j => m('.column', fields.find(k => k[j])[j]())
-    ))) : fields.map(i => Object.values(i)[0]()),
+    ))) : fields.map(i => _.values(i)[0]()),
     m('.row', m('button.button',
       _.assign({type: 'submit', class: 'is-info'}, opts.submit),
-      (opts.submit && opts.submit.value) || 'Submit'
+      _.get(opts, 'submit.value') || 'Submit'
     ))
   )
 }})
