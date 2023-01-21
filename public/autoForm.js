@@ -7,11 +7,7 @@ autoForm = opts => ({view: () => {
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
     zeros = num => num < 10 ? '0'+num : ''+num,
-    dateStamp = [
-      date.getFullYear(),
-      zeros(date.getMonth()+1),
-      zeros(date.getDate())
-    ].join('-'),
+    dateStamp = [date.getFullYear(), zeros(date.getMonth()+1), zeros(date.getDate())].join('-'),
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
   },
