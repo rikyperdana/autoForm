@@ -88,6 +88,10 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
+    file: () => ('input.input', {
+      type: 'file', name: !schema.exclude ? name: '',
+      post: schema.api
+    }),
     hidden: () => m('input.input', {
       type: 'hidden', name: !schema.exclude ? name : '',
       value: schema.autoValue &&
