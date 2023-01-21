@@ -88,10 +88,16 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
-    file: () => ('input.input', {
-      type: 'file', name: !schema.exclude ? name: '',
-      post: schema.api
-    }),
+    file: () => m('div',
+      m('input.button', {
+        type: 'file', name: !schema.exclude ? name: '',
+      }), m('.button', {onclick: () => console.log('ini')}, 'Upload'),
+      m('input.input', {
+        readonly: true, disabled: true,
+        value: _.get(afState.form, [opts.id, name]) || 'Waiting for file'
+      }),
+    ),
+
     hidden: () => m('input.input', {
       type: 'hidden', name: !schema.exclude ? name : '',
       value: schema.autoValue &&
