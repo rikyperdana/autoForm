@@ -1,14 +1,16 @@
 var
+uploadDir = '/home/rikyperdana/Github/autoForm/uploads'
 express = require('express'),
 mongodb = require('mongodb'),
 formidable = require('formidable'),
-app = express(),
-form = formidable({uploadDir: '/home/rikyperdana/Github/autoForm/uploads'})
+form = formidable({uploadDir}),
 
-app.post('/upload', (req, res, next) =>
+app = express()
+.use(express.json())
+.post('/upload', (req, res) =>
   form.parse(req, (err, fields, files) =>
-    err ? console.log(err) : res.json({fields, files})
+    console.log({fields, files})
   )
 )
-
-app.use(express.static('public')).listen(3000)
+.use(express.static('public'))
+.listen(3000)

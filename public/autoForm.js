@@ -1,3 +1,9 @@
+formDataMaker = (nama, isi) => {
+  coba = new FormData()
+  coba.append(nama, isi)
+  return coba
+}
+
 var m, _, afState = {arrLen: {}, form: {}},
 
 autoForm = opts => ({view: () => {
@@ -88,18 +94,18 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
-    file: () => m('form',
-      {
-        method: 'post', action: '/upload',
-        enctype: 'multipart/form-data',
-      },
+    file: () => m('div',
       m('input.button', {
         type: 'file', name: !schema.exclude ? name : '',
+        // onchange: e => console.log(e.target.files[0])
+        onchange: e => fetch('/upload', {
+          // headers: {'Content-Type': 'application/json'},
+          method: 'post', body: formDataMaker('coba', e.target.files[0])
+        })
       }),
-      m('input.button', {type: 'submit', value: 'Upload'}),
       m('input.input', {
         readonly: true, disabled: true,
-        value: _.get(afState.form, [opts.id, name]) || 'Waiting for file'
+        value: _.get(afState.form, [opts.id, name])
       }),
     ),
 
