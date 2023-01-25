@@ -9,7 +9,7 @@ app = express()
 .use(express.json())
 .post('/upload', (req, res) =>
   form.parse(req, (err, fields, files) =>
-    console.log({fields, files})
+    res.json({fields, files})
   )
 )
 .use(express.static('public'))

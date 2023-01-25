@@ -1,9 +1,3 @@
-formDataMaker = (nama, isi) => {
-  coba = new FormData()
-  coba.append(nama, isi)
-  return coba
-}
-
 var m, _, afState = {arrLen: {}, form: {}},
 
 autoForm = opts => ({view: () => {
@@ -17,6 +11,11 @@ autoForm = opts => ({view: () => {
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
   },
+  fileData = (key, val) => {
+    form = new FormData()
+    form.append(key, val)
+    return form
+  }
 
   linearize = obj => {
     var recurse = doc => withThis(
@@ -96,14 +95,16 @@ autoForm = opts => ({view: () => {
   inputTypes = (name, schema) => ({
     file: () => m('div',
       m('input.button', {
-        type: 'file', name: !schema.exclude ? name : '',
-        // onchange: e => console.log(e.target.files[0])
-        onchange: e => fetch('/upload', {
-          // headers: {'Content-Type': 'application/json'},
-          method: 'post', body: formDataMaker('coba', e.target.files[0])
-        })
+        type: 'file', onchange: e => fetch('/upload', {
+          method: 'post', body: fileData(name, e.target.files[0])
+        }).then(res => res.json()).then(res => _.assign(
+          afState.form[opts.id], _.fromPairs([[
+            name, res.files.file.newFilename
+          ]])
+        ) && m.redraw())
       }),
       m('input.input', {
+        name: !schema.exclude ? name : '',
         readonly: true, disabled: true,
         value: _.get(afState.form, [opts.id, name])
       }),
