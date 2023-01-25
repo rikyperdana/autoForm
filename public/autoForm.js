@@ -4,6 +4,7 @@ autoForm = opts => ({view: () => {
   var normal = name => name.replace(/\d/g, '$'),
   withThis = (obj, cb) => cb(obj),
   ors = array => array.find(Boolean),
+  fileData = (key, val) => {form = new FormData(); form.append(key, val); return form}
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
     zeros = num => num < 10 ? '0'+num : ''+num,
@@ -11,11 +12,6 @@ autoForm = opts => ({view: () => {
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
   },
-  fileData = (key, val) => {
-    form = new FormData()
-    form.append(key, val)
-    return form
-  }
 
   linearize = obj => {
     var recurse = doc => withThis(
