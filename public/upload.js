@@ -3,7 +3,7 @@ _.assign(comp, {upload: () => m('.content',
   m(autoForm({
     id: 'uploader', action: console.log,
     schema: {
-      file: {type: String, autoform: {
+      archive: {type: String, autoform: {
         type: 'file'
       }}
     }
