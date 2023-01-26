@@ -3,15 +3,13 @@ var m, _, afState = {arrLen: {}, form: {}},
 autoForm = opts => ({view: () => {
   var normal = name => name.replace(/\d/g, '$'),
   withThis = (obj, cb) => cb(obj),
+  ifit = (obj, cb) => obj && cb(obj),
   ors = array => array.find(Boolean),
+  fileData = (key, val) => {form = new FormData(); form.append(key, val); return form}
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
     zeros = num => num < 10 ? '0'+num : ''+num,
-    dateStamp = [
-      date.getFullYear(),
-      zeros(date.getMonth()+1),
-      zeros(date.getDate())
-    ].join('-'),
+    dateStamp = [date.getFullYear(), zeros(date.getMonth()+1), zeros(date.getDate())].join('-'),
     hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp+hourStamp
   },
@@ -92,6 +90,34 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
+    file: () => m('.field', attr.label(name, schema),
+      m('input.button', {
+        type: 'file', onchange: e => fetch('/upload', {
+          method: 'post', body: fileData(name, e.target.files[0])
+        }).then(res => res.json()).then(res => _.assign(
+          afState.form[opts.id], _.fromPairs([[
+            name, JSON.stringify({
+              id: res[name].newFilename,
+              ori: res[name].originalFilename,
+              size: res[name].size,
+              ext: res[name].mimetype.split('/')[1]
+            })
+          ]])
+        ) && m.redraw())
+      }),
+      m('input.input', {
+        readonly: true, disabled: true,
+        value: ifit(
+          _.get(afState.form, [opts.id, name]),
+          i => '100% ' + JSON.parse(i).ori
+        ) || '0% None uploaded'
+      }),
+      m('input.input', {
+        type: 'hidden', name: !schema.exclude ? name : '',
+        value: _.get(afState.form, [opts.id, name])
+      }),
+    ),
+
     hidden: () => m('input.input', {
       type: 'hidden', name: !schema.exclude ? name : '',
       value: schema.autoValue &&
