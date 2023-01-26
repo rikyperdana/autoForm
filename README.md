@@ -2,18 +2,17 @@
 
 [Demo](https://rikyperdana.github.io/autoForm/)
 
-Submit anything and see the browser console
+Submit anything and get the result in JSON
 
 ## Introduction
-AutoForm is a remake of Meteor AutoForm library that serves similiar purpose of generating a form which follow defined schemas.
-You may take this project as a standalone boilerplate or copy some of it's parts to be included in your project or anything you see fit.
-This project is composed of functions that returns Mithril virtual DOMs, therefore understanding MithrilJS first is suggested. The `autoForm` function itself only contains of less than 200 lines of code, intededly made simple so you can freely modify this function.
+AutoForm is a general purpose form maker, inspired from Meteor AutoForm library that serves similiar purpose of generating a form which follow defined schemas. You may take this project as a standalone boilerplate or copy some of it's parts to be included in your project or anything you see fit.
+This project is composed of functions that returns Mithril virtual DOMs, therefore understanding MithrilJS first is suggested. The `autoForm` function itself only contains of less than 300 lines of code, intededly made simple so you can freely modify this function. Express.js is not required.
 
 ## Quickstart
 ```
-npm install -g live-server
 git clone https://github.com/rikyperdana/autoform
-live-server
+npm install
+node server.js
 ```
 
 ## Usage Example
@@ -66,23 +65,22 @@ A schema-object is an object of key:value pairs where the key represents the fie
 The list below shall demonstrate various examples of schema you can define:
 ```
 name: {type: String},
-age: {type: Number, minMax: function(){return [18, 65]}},
+age: {type: Number, minMax: x => [18, 65]},
 birth: {type: Date},
 address: {type: String, label: 'Home Adress'},
 mobile: {type: Number, optional: true},
 gender: {
   type: String, autoRedraw: true,
-  autoform: {type: 'select', options: function(){return [
+  autoform: {type: 'select', options: x => [
     {value: 'male', label: 'Male'},
     {value: 'female', label: 'Female'}
-  ]}}
+  ]}
 },
 occupation: {type: Number, optional: true, autoform: {
-  type: 'select', options: function(name, doc){
-    return ['student', 'freelance', 'professional'].map(function(val, index){
-      return {value: index, label: val}
-    })
-  }
+  type: 'select',
+  options: (name, doc) => ['student', 'freelance', 'professional'].map(
+    (val, index) => ({value: index, label: val})
+  )
 }},
 country_id: {type: String, regExp: '[A-Za-z]{3}'},
 work_experience: {type: Object},
@@ -99,13 +97,18 @@ excluded: {type: String, exclude: true},
 just_info: {
   type: String,
   autoform: {type: 'readonly'},
-  autoValue: function(name, doc){return name}
+  autoValue: (name, doc) => name
 },
 hidden_field: {
   type: String,
   autoform: {type: 'hidden'},
-  autoValue: function(){return 'something'}
+  autoValue: x => 'anything'
 },
+archive: {
+  type: String,
+  label: 'attachment',
+  autoform: {type: 'file'}
+}
 ```
 ### Schema Descriptions
 `type`: Data type you want the field to be filled with. Supported types are `String`, `Number`, `Date`, `Object`, `Array`. The following details are:
@@ -132,6 +135,7 @@ hidden_field: {
 - `textarea`: display a widened field for long text.
 - `readonly`: display a pre-filled field with customizable value.
 - `hidden`: display nothing on the page, yet retains the determined value upon submission.
+- `file`: used to create single file uploader which shall store `fileId, originalName, fileExtension, fileSize`. Built with Formidable.js from npm library, thus express.js required.
 
 `autoform.options`: If `autoform: {type: 'select'}` is used, return a function that return an array that contains `value` and `label` properties. Two callbacks are provided `(name, doc)` to help customization.
 
@@ -147,7 +151,7 @@ hidden_field: {
 All dependencies for this project are served through CDNs.
 
 ## Further Development
-- File input field, along with selected file information.
+- Coordinates on map
 
 ## Caveat & Known Issues
 - Radios and Checkboxes are intetionally left unfeatured as jQuery or the likes are necessary to capture their values.
