@@ -18,7 +18,7 @@ _.assign(comp, {
     m('.navbar-menu',
       {class: state.burgerMenu && 'is-active'},
       m('.navbar-start',
-        ['samples', 'upload'].map(i =>
+        ['samples'].map(i =>
           m('a.navbar-item',
             {onclick: () => [
               _.assign(state, {
