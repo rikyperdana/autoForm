@@ -90,7 +90,7 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
-    file: () => m('div',
+    file: () => m('.field', attr.label(name, schema),
       m('input.button', {
         type: 'file', onchange: e => fetch('/upload', {
           method: 'post', body: fileData(name, e.target.files[0])
