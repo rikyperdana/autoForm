@@ -70,6 +70,18 @@ var samples = [
     layout: {top: [['height', 'weight', 'bmi']]}
   },
   {
+    title: 'File Upload',
+    schema: {
+      title: {type: String, label: 'Article Title'},
+      authors: {type: Array},
+      'authors.$': {type: String},
+      file: {
+        type: String, label: 'Article File',
+        autoform: {type: 'file'}
+      }
+    }
+  },
+  {
     title: 'Curriculum Vitae',
     schema: {
       personal: {type: Object},
