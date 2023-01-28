@@ -70,6 +70,17 @@ var samples = [
     layout: {top: [['height', 'weight', 'bmi']]}
   },
   {
+    title: 'Shopping List',
+    schema: {
+      coba: {type: Array},
+      'coba.$': {type: String},
+      goods: {type: Array, autoform: {
+        type: 'checkbox', list: ['rice', 'noodle']
+      }},
+      'goods.$': {type: String}
+    }
+  },
+  {
     title: 'File Upload',
     schema: {
       title: {type: String, label: 'Article Title'},
