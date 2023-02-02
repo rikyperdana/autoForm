@@ -103,17 +103,17 @@ autoForm = opts => ({view: () => {
         accept: _.get(schema, 'autoform.accept')
           .map(i => '.' + i).join(',') || '*',
         onchange: e =>
-        (_.get(schema, 'autoform.limit') || 1e10) >
-        e.target.files[0].size && fetch('/upload', {
-          method: 'post', body: fileData(name, e.target.files[0])
-        }).then(res => res.json()).then(res => _.assign(
-          afState.form[opts.id], {[name]: JSON.stringify({
-            id: res[name].newFilename,
-            ori: res[name].originalFilename,
-            size: res[name].size,
-            ext: res[name].mimetype.split('/')[1]
-          })}
-        ) && m.redraw())
+          (_.get(schema, 'autoform.limit') || 1e10) >
+          e.target.files[0].size && fetch('/upload', {
+            method: 'post', body: fileData(name, e.target.files[0])
+          }).then(res => res.json()).then(res => _.assign(
+            afState.form[opts.id], {[name]: JSON.stringify({
+              id: res[name].newFilename,
+              ori: res[name].originalFilename,
+              size: res[name].size,
+              ext: res[name].mimetype.split('/')[1]
+            })}
+          ) && m.redraw())
       }),
       m('input.input', {
         readonly: true, disabled: true,

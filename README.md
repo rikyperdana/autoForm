@@ -107,7 +107,11 @@ hidden_field: {
 archive: {
   type: String,
   label: 'attachment',
-  autoform: {type: 'file'}
+  autoform: {
+    type: 'file', accept: ['pdf', 'docx'],
+    help: 'Only accept .pdf or .docx under 150Kb',
+    limit: 150000
+  }
 }
 ```
 ### Schema Descriptions
@@ -138,6 +142,10 @@ archive: {
 - `file`: used to create single file uploader which shall store `fileId, originalName, fileExtension, fileSize`. Built with Formidable.js from npm library, thus express.js required.
 
 `autoform.options`: If `autoform: {type: 'select'}` is used, return a function that return an array that contains `value` and `label` properties. Two callbacks are provided `(name, doc)` to help customization.
+
+`autoform.limit`: Used to limit file size (in bytes) before uploaded to server.
+
+`autoform.accept`: An array of file extensions allowed to be uploaded. Ex: `['png', 'jpg']`.
 
 `autoValue`: A function that accepts `(name, doc)` as callbacks where `name` is the respective field name and `doc` are the current values of given form.
 
