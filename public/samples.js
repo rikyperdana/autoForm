@@ -78,7 +78,8 @@ var samples = [
       file: {
         type: String, label: 'Article File', autoform: {
           type: 'file', accept: ['pdf', 'docx'],
-          help: 'Only accept .pdf or .docx'
+          help: 'Only accept .pdf or .docx under 150Kb',
+          limit: 150000 // in bytes
         }
       }
     }
