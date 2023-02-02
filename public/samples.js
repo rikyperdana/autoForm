@@ -76,8 +76,10 @@ var samples = [
       authors: {type: Array},
       'authors.$': {type: String},
       file: {
-        type: String, label: 'Article File',
-        autoform: {type: 'file'}
+        type: String, label: 'Article File', autoform: {
+          type: 'file', accept: ['pdf', 'docx'],
+          help: 'Only accept .pdf or .docx'
+        }
       }
     }
   },

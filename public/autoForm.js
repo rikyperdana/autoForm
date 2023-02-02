@@ -91,8 +91,12 @@ autoForm = opts => ({view: () => {
 
   inputTypes = (name, schema) => ({
     file: () => m('.field', attr.label(name, schema),
+      !_.get(afState.form, [opts.id, name]) &&
       m('input.button', {
-        type: 'file', onchange: e => fetch('/upload', {
+        type: 'file',
+        accept: _.get(schema, 'autoform.accept')
+          .map(i => '.' + i).join(',') || '*',
+        onchange: e => fetch('/upload', {
           method: 'post', body: fileData(name, e.target.files[0])
         }).then(res => res.json()).then(res => _.assign(
           afState.form[opts.id], _.fromPairs([[
@@ -116,6 +120,7 @@ autoForm = opts => ({view: () => {
         type: 'hidden', name: !schema.exclude ? name : '',
         value: _.get(afState.form, [opts.id, name])
       }),
+      m('p.help', _.get(schema, 'autoform.help'))
     ),
 
     hidden: () => m('input.input', {
