@@ -5,6 +5,7 @@ autoForm = opts => ({view: () => {
   withThis = (obj, cb) => cb(obj),
   ifit = (obj, cb) => obj && cb(obj),
   ors = array => array.find(Boolean),
+  ands = array => array.reduce((a, b) => a && b, true),
   findKey = (val, obj) => Object.keys(obj).find(key => obj[key] === val),
   fileData = (key, val) => {form = new FormData(); form.append(key, val); return form}
   dateValue = (timestamp, hour) => {
@@ -100,11 +101,21 @@ autoForm = opts => ({view: () => {
       !_.get(afState.form, [opts.id, name]) &&
       m('input.button', {
         type: 'file',
-        accept: _.get(schema, 'autoform.accept')
-          .map(i => '.' + i).join(',') || '*',
-        onchange: e =>
-          (_.get(schema, 'autoform.limit') || 1e10) >
-          e.target.files[0].size && fetch('/upload', {
+        accept: withThis(
+          _.get(schema, 'autoform.accept'),
+          extList => !extList ? '*' :
+            extList.map(i => '.' + i).join(',')
+        ),
+        onchange: e => ands([
+            (_.get(schema, 'autoform.limit') || 1e10)
+              > e.target.files[0].size,
+            withThis(
+              _.get(schema, 'autoform.accept'),
+              extList => extList ? extList.includes(
+                e.target.files[0].name.split('.').slice(-1)[0]
+              ) : true
+            )
+          ]) && fetch('/upload', {
             method: 'post', body: fileData(name, e.target.files[0])
           }).then(res => res.json()).then(res => _.assign(
             afState.form[opts.id], {[name]: JSON.stringify({
