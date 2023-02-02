@@ -5,11 +5,16 @@ autoForm = opts => ({view: () => {
   withThis = (obj, cb) => cb(obj),
   ifit = (obj, cb) => obj && cb(obj),
   ors = array => array.find(Boolean),
+  findKey = (val, obj) => Object.keys(obj).find(key => obj[key] === val),
   fileData = (key, val) => {form = new FormData(); form.append(key, val); return form}
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
     zeros = num => num < 10 ? '0' + num : '' + num,
-    dateStamp = [date.getFullYear(), zeros(date.getMonth()+1), zeros(date.getDate())].join('-'),
+    dateStamp = [
+      date.getFullYear(),
+      zeros(date.getMonth() + 1),
+      zeros(date.getDate())
+    ].join('-'),
     hourStamp = 'T' + zeros(date.getHours()) + ':' + zeros(date.getMinutes())
     return !hour ? dateStamp : dateStamp + hourStamp
   },
@@ -200,13 +205,13 @@ autoForm = opts => ({view: () => {
           ).filter(i => withThis(
             str => _.size(_.split(str, '.')),
             getLen => _.every([
-              _.includes(i.name, normal(name)+'.'),
-              getLen(name)+1 === getLen(i.name)
+              _.includes(i.name, normal(name) + '.'),
+              getLen(name) + 1 === getLen(i.name)
             ])
           )).map(i => withThis(
             {
               childSchema: opts.schema[normal(i.name)],
-              fieldName: name+'.'+_.last(i.name.split('.'))
+              fieldName: name + '.' + _.last(i.name.split('.'))
             },
             ({childSchema, fieldName}) => ({[fieldName]: () =>
               inputTypes(fieldName, childSchema)
@@ -217,8 +222,8 @@ autoForm = opts => ({view: () => {
             _.get(opts.layout, normal(name)) ?
             opts.layout[normal(name)].map(i => m('.columns',
               i.map(j => m('.column', fields.find(
-                k => k[name+'.'+j]
-              )[name+'.'+j]()))
+                k => k[name + '.' + j]
+              )[name + '.' + j]()))
             )) : fields.map(i => _.values(i)[0]())
         ),
         m('p.help', _.get(schema, 'autoform.help'))
@@ -235,8 +240,8 @@ autoForm = opts => ({view: () => {
           _.get(opts.doc, name) && opts.doc[name].length,
           afState.arrLen[name]
         ).map(i => withThis(
-          opts.schema[normal(name)+'.$'],
-          childSchema => inputTypes(name+'.'+i, childSchema)[
+          opts.schema[normal(name) + '.$'],
+          childSchema => inputTypes(name + '.' + i, childSchema)[
             _.get(childSchema, 'autoform.type') || 'standard'
           ]()
         )),
@@ -259,10 +264,7 @@ autoForm = opts => ({view: () => {
           min: schema.minMax && schema.minMax(name, afState.form[opts.id])[0],
           max: schema.minMax && schema.minMax(name, afState.form[opts.id])[1],
           onchange: schema.autoRedraw && function(){},
-          type: _.get(
-            [[Date, 'date'], [String, 'text'], [Number, 'number']]
-            .find(i => i[0] === schema.type), '1'
-          ),
+          type: findKey(schema.type, {date: Date, text: String, number: Number})
         })),
         m('p.help', _.get(schema, 'autoform.help'))
       )
