@@ -8,10 +8,10 @@ autoForm = opts => ({view: () => {
   fileData = (key, val) => {form = new FormData(); form.append(key, val); return form}
   dateValue = (timestamp, hour) => {
     var date = new Date(timestamp),
-    zeros = num => num < 10 ? '0'+num : ''+num,
+    zeros = num => num < 10 ? '0' + num : '' + num,
     dateStamp = [date.getFullYear(), zeros(date.getMonth()+1), zeros(date.getDate())].join('-'),
-    hourStamp = 'T'+zeros(date.getHours())+':'+zeros(date.getMinutes())
-    return !hour ? dateStamp : dateStamp+hourStamp
+    hourStamp = 'T' + zeros(date.getHours()) + ':' + zeros(date.getMinutes())
+    return !hour ? dateStamp : dateStamp + hourStamp
   },
 
   linearize = obj => {
@@ -19,12 +19,13 @@ autoForm = opts => ({view: () => {
       doc[_.keys(doc)[0]],
       value => typeof(value) === 'object' ?
       _.map(value, (val, key) => recurse(
-        {[_.keys(doc)[0]+'.'+key]: val}
+        {[_.keys(doc)[0] + '.' + key]: val}
       )) : doc
     )
     return _.fromPairs(
-      _.flattenDeep(recurse({doc: obj}))
-      .map(i => [_.keys(i)[0].substr(4), _.values(i)[0]])
+      _.flattenDeep(recurse({doc: obj})).map(
+        i => [_.keys(i)[0].substr(4), _.values(i)[0]]
+      )
     )
   }
 
@@ -61,7 +62,7 @@ autoForm = opts => ({view: () => {
               typeof(data) === 'object' && withThis(
                 {key: _.keys(data)[0], val: _.values(data)[0]},
                 ({key, val}) => ors([
-                  +key+1 && _.range(+key+1).map(
+                  +key + 1 && _.range(+key + 1).map(
                     i => i === +key ? recursive(val) : undefined
                   ),
                   {[key]: recursive(val)}
@@ -83,7 +84,7 @@ autoForm = opts => ({view: () => {
     }}),
     label: (name, schema) => m('label.label',
       m('span', schema.label || _.startCase(
-       name.split('.').map(i => +i+1 ? +i+1 : i).join('.')
+       name.split('.').map(i => +i + 1 ? +i + 1 : i).join('.')
       )),
       m('span', m('b.has-text-danger', !schema.optional && ' *'))
     )
@@ -99,14 +100,12 @@ autoForm = opts => ({view: () => {
         onchange: e => fetch('/upload', {
           method: 'post', body: fileData(name, e.target.files[0])
         }).then(res => res.json()).then(res => _.assign(
-          afState.form[opts.id], _.fromPairs([[
-            name, JSON.stringify({
-              id: res[name].newFilename,
-              ori: res[name].originalFilename,
-              size: res[name].size,
-              ext: res[name].mimetype.split('/')[1]
-            })
-          ]])
+          afState.form[opts.id], {[name]: JSON.stringify({
+            id: res[name].newFilename,
+            ori: res[name].originalFilename,
+            size: res[name].size,
+            ext: res[name].mimetype.split('/')[1]
+          })}
         ) && m.redraw())
       }),
       m('input.input', {
