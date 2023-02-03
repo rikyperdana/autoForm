@@ -1,4 +1,4 @@
-var m, _, afState = {arrLen: {}, form: {}},
+var m, _, afState = {arrLen: {}, form: {}}, {stringify, parse} = JSON,
 
 autoForm = opts => ({view: () => {
   var normal = name => name.replace(/\d/g, '$'),
@@ -97,48 +97,51 @@ autoForm = opts => ({view: () => {
   },
 
   inputTypes = (name, schema) => ({
-    file: () => m('.field', attr.label(name, schema),
-      !_.get(afState.form, [opts.id, name]) &&
-      m('input.button', {
-        type: 'file',
-        accept: withThis(
-          _.get(schema, 'autoform.accept'),
-          extList => !extList ? '*' :
-            extList.map(i => '.' + i).join(',')
-        ),
-        onchange: e => ands([
-          (_.get(schema, 'autoform.limit') || 1e10)
-            > e.target.files[0].size,
-          withThis(
-            _.get(schema, 'autoform.accept'),
-            extList => extList ? extList.includes(
-              e.target.files[0].name.split('.').slice(-1)[0]
-            ) : true
-          )
-        ]) && fetch('/upload', {
-          method: 'post', body: fileData(name, e.target.files[0])
-        }).then(res => res.json()).then(res => _.assign(
-          afState.form[opts.id], {[name]: JSON.stringify({
-            id: res[name].newFilename,
-            ori: res[name].originalFilename,
-            size: res[name].size,
-            ext: res[name].mimetype.split('/')[1]
-          })}
-        ) && m.redraw())
-      }),
-      m('input.input', {
-        readonly: true, disabled: true,
-        value: ifit(
-          _.get(afState.form, [opts.id, name]),
-          i => '100% ' + JSON.parse(i).ori
-        ) || '0% None uploaded'
-      }),
-      m('input.input', {
-        type: 'hidden', name: !schema.exclude ? name : '',
-        value: _.get(afState.form, [opts.id, name])
-      }),
-      m('p.help', _.get(schema, 'autoform.help'))
-    ),
+
+    file: () => m('.field', attr.label(name, schema), withThis(
+      _.get(afState.form, [opts.id, name]), thisFile =>
+        thisFile ? m('.field.has-addons', [
+          m('input.input', {
+            readonly: true, disabled: true,
+            value: '100% ' + parse(thisFile).ori
+          }),
+          m('.control', m('.button.is-danger', {
+            onclick: () => console.log(parse(thisFile))
+          }, '-'))
+        ]) : [
+          m('input.button', {
+            type: 'file',
+            accept: withThis(
+              _.get(schema, 'autoform.accept'),
+              extList => !extList ? '*' :
+                extList.map(i => '.' + i).join(',')
+            ),
+            onchange: e => ands([
+              (_.get(schema, 'autoform.limit') || 1e10)
+                > e.target.files[0].size,
+              withThis(
+                _.get(schema, 'autoform.accept'),
+                extList => extList ? extList.includes(
+                  e.target.files[0].name.split('.').slice(-1)[0]
+                ) : true
+              )
+            ]) && fetch('/upload', {
+              method: 'post', body: fileData(name, e.target.files[0])
+            }).then(res => res.json()).then(res => _.assign(
+              afState.form[opts.id], {[name]: stringify({
+                id: res[name].newFilename,
+                ori: res[name].originalFilename,
+                size: res[name].size,
+                ext: res[name].mimetype.split('/')[1]
+              })}
+            ) && m.redraw())
+          }),
+          m('p.help', _.get(schema, 'autoform.help'))
+        ]
+    ), m('input.input', {
+      type: 'hidden', name: !schema.exclude ? name : '',
+      value: _.get(afState.form, [opts.id, name])
+    })),
 
     hidden: () => m('input.input', {
       type: 'hidden', name: !schema.exclude ? name : '',
