@@ -200,6 +200,19 @@ autoForm = opts => ({view: () => {
       m('p.help', _.get(schema, 'autoform.help'))
     ),
 
+    checkbox: () => m('.checkbox',
+      _.get(schema, 'autoform.list').map(
+        (i, j) => m('label.checkbox',
+          {style: {padding: '5px'}}, [
+            m('input', {
+              type: 'checkbox', name: name+'.'+j,
+              value: i
+            }), _.startCase(i),
+          ]
+        )
+      )
+    ),
+
     select: () => m('.field.is-expanded',
       attr.label(name, schema),
       m('.select.is-fullwidth', m('select',
