@@ -1,5 +1,6 @@
 var
-uploadDir = '/home/rikyperdana/Github/autoForm/uploads'
+fs = require('fs'),
+uploadDir = '/home/rikyperdana/Github/autoForm/uploads',
 express = require('express'),
 mongodb = require('mongodb'),
 formidable = require('formidable'),
@@ -12,6 +13,10 @@ app = express()
     res.json(files)
   )
 )
+.post('/unload', (req, res) => fs.unlink(
+  './uploads/' + req.body.id,
+  err => !err && res.json({status: true})
+))
 .use(express.static('public'))
 .use('/uploads', express.static('uploads')) // #2
 .listen(3000)
