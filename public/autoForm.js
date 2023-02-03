@@ -106,7 +106,14 @@ autoForm = opts => ({view: () => {
             value: '100% ' + parse(thisFile).ori
           }),
           m('.control', m('.button.is-danger', {
-            onclick: () => console.log(parse(thisFile))
+            onclick: () => fetch('/unload', {
+              headers: {'Content-Type': 'application/json'},
+              method: 'post', body: thisFile
+            }).then(res => res.json()).then(
+              res => res.status === true &&
+              (delete afState.form[opts.id][name]) &&
+              m.redraw()
+            )
           }, '-'))
         ]) : [
           m('input.button', {
