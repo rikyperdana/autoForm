@@ -1,9 +1,5 @@
 # AutoForm
 
-[Demo](https://rikyperdana.github.io/autoForm/)
-
-Submit anything and get the result in JSON
-
 ## Introduction
 AutoForm is a general purpose form maker, inspired from Meteor AutoForm library that serves similiar purpose of generating a form which follow defined schemas. You may take this project as a standalone boilerplate or copy some of it's parts to be included in your project or anything you see fit.
 This project is composed of functions that returns Mithril virtual DOMs, therefore understanding MithrilJS first is suggested. The `autoForm` function itself only contains of less than 300 lines of code, intededly made simple so you can freely modify this function. Express.js is not required.
@@ -14,8 +10,9 @@ git clone https://github.com/rikyperdana/autoform
 npm install
 node server.js
 ```
+After that, open https://localhost:3000
 
-## Usage Example
+## How to use
 ```javascript
 m(autoForm({
   id: 'testForm',
