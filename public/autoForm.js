@@ -7,7 +7,6 @@ autoForm = opts => ({view: () => {
   ifit = (obj, cb) => obj && cb(obj),
   ors = array => array.find(Boolean),
   ands = array => array.reduce((a, b) => a && b, true),
-  findKey = (val, obj) => Object.keys(obj).find(key => obj[key] === val),
   
   // change all numbers to $ sign
   normal = name => name.replace(/\d/g, '$'),
@@ -235,7 +234,6 @@ autoForm = opts => ({view: () => {
       schema.autoform.options()
       .map(i => m('label.checkbox',
         m('input', {
-          required: !schema.optional,    
           type: 'checkbox', id: name + '.' + i.value,
           name: schema.exclude ? '' : name + '.' + i.value,
           value: Boolean(document.querySelector(
@@ -332,7 +330,10 @@ autoForm = opts => ({view: () => {
           min: schema.minMax && schema.minMax(name, afState.form[opts.id])[0],
           max: schema.minMax && schema.minMax(name, afState.form[opts.id])[1],
           onchange: schema.autoRedraw && function(){},
-          type: findKey(schema.type, {date: Date, text: String, number: Number})
+          type: _.find(
+            {date: Date, text: String, number: Number},
+            i => i[schema.type]
+          )
         })),
         m('p.help', _.get(schema, 'autoform.help'))
       )
