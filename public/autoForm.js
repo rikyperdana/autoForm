@@ -330,9 +330,9 @@ autoForm = opts => ({view: () => {
           min: schema.minMax && schema.minMax(name, afState.form[opts.id])[0],
           max: schema.minMax && schema.minMax(name, afState.form[opts.id])[1],
           onchange: schema.autoRedraw && function(){},
-          type: _.find(
+          type: _.findKey(
             {date: Date, text: String, number: Number},
-            i => i[schema.type]
+            (val, key) => val === schema.type
           )
         })),
         m('p.help', _.get(schema, 'autoform.help'))
@@ -353,9 +353,14 @@ autoForm = opts => ({view: () => {
     opts.layout.top.map(i => m('.columns', i.map(
       j => m('.column', fields.find(k => k[j])[j]())
     ))) : fields.map(i => _.values(i)[0]()),
-    m('.row', m('button.button',
-      _.assign({type: 'submit', class: 'is-info'}, opts.submit),
-      _.get(opts, 'submit.value') || 'Submit'
+    m('.row', m('.field.is-grouped',
+      [
+        {
+          title: _.get(opts, 'submit.value') || 'Submit',
+          opt: _.assign({type: 'submit', class: 'is-info'}, opts.submit),
+        },
+        ...(opts.buttons || [])
+      ].map(i => m('.control', m('button.button', i.opt, i.title)))
     ))
   )
 }})
