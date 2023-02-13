@@ -91,6 +91,13 @@ education: {type: Array},
 'education.$.date': {type: Date, label: 'Graduation date'},
 entry_time: {type: Date, autoform: {type: 'datetime-local'}},
 excluded: {type: String, exclude: true},
+languages: {type: Array, autoform: {
+  type: 'checkbox', options: e => [{
+    value: 1, label: 'English UK',
+    value: 2, label: 'Indonesia'
+  }]
+}},
+'languages.$': {type: Number},
 just_info: {
   type: String,
   autoform: {type: 'readonly'},
@@ -159,5 +166,5 @@ All dependencies for this project are served through CDNs.
 - Coordinates on map
 
 ## Caveat & Known Issues
-- Radios and Checkboxes are intetionally left unfeatured as jQuery or the likes are necessary to capture their values.
+- Radios are intetionally left unfeatured as jQuery or the likes are necessary to capture their values.
 - MithrilJS `redraw()` nature is to re-render the whole page at each lifecycle. Thus, `redraw()` execution outside the form element shall affect the form as well.
