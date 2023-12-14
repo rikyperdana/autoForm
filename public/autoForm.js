@@ -1,5 +1,6 @@
 var m, _, {stringify, parse} = JSON,
 afState = {arrLen: {}, form: {}},
+clearForm = x => afState = {arrLen: {}, form: {}},
 
 autoForm = opts => ({view: () => {
 
@@ -33,24 +34,24 @@ autoForm = opts => ({view: () => {
 
   // to convert structured object to linearized format
   linearize = obj => {
-    var recurse = doc => withAs(
+    var linear = doc => withAs(
       doc[_.keys(doc)[0]],
       value => typeof(value) === 'object' ?
-      _.map(value, (val, key) => recurse(
+      _.map(value, (val, key) => linear(
         {[_.keys(doc)[0] + '.' + key]: val}
       )) : doc
     )
     return _.fromPairs(
-      _.flattenDeep(recurse({doc: obj})).map(
+      _.flattenDeep(linear({doc: obj})).map(
         i => [_.keys(i)[0].substr(4), _.values(i)[0]]
       )
     )
   }
 
-  // if editable doc is provided, put in afState
-  afState.form[opts.id] = opts.doc
-    ? _.assign(afState.form[opts.id], linearize(opts.doc))
-    : afState.form[opts.id]
+  // preserve form values or fill with provided doc
+  afState.form[opts.id] = afState.form[opts.id] || (
+    opts.doc && _.assign(afState.form[opts.id], linearize(opts.doc))
+  )
 
   var attr = {
     form: {
@@ -80,12 +81,12 @@ autoForm = opts => ({view: () => {
 
               // convert values according to it's schema
               (obj.checked || obj.value) && ors([
-                ((type === String) && obj.value),
-                ((type === Number) && +ors([
+                (type === String) && obj.value,
+                (type === Number) && +ors([
                   obj.checked && _.last(obj.name.split('.')),
                   obj.value
-                ])),
-                ((type === Date) && (new Date(obj.value)).getTime())
+                ]),
+                (type === Date) && (new Date(obj.value)).getTime()
               ])
             )
           )).reduce((res, inc) => {
@@ -106,14 +107,18 @@ autoForm = opts => ({view: () => {
             return _.merge(res, combiner(inc))
           }, {}), opts
         )
-        !opts.confirmMessage ? submit()
-        : confirm(opts.confirmMessage) && submit()
+        !opts.confirmMessage ? [submit() && clearForm()]
+        : confirm(opts.confirmMessage) && [submit() && clearForm()]
       }
     },
 
     // function to determine the length of an array input
     arrLen: (name, type) => ({onclick: () => {
-      afState.arrLen[name] = _.get(afState.arrLen, name) || 0
+      // afState.arrLen[name] = _.get(afState.arrLen, name) || 0
+      afState.arrLen[name] = ors([
+        _.get(afState.arrLen, name),
+        _.get(opts.doc, name)?.length
+      ]) || 0
       var dec = afState.arrLen[name] > 0 ? -1 : 0
       afState.arrLen[name] += ({inc: 1, dec})[type]
     }}),
@@ -132,7 +137,7 @@ autoForm = opts => ({view: () => {
     file: () => m('.field', attr.label(name, schema), withAs(
       _.get(afState.form, [opts.id, name]), thisFile =>
         thisFile ? m('.field.has-addons', [
-          !_.get(opts, 'submit.off') && m('input.input', {
+          m('input.input', {
             readonly: true, disabled: true,
             value: '100% ' + parse(thisFile).ori
           }),
@@ -147,10 +152,11 @@ autoForm = opts => ({view: () => {
               headers: {'Content-Type': 'application/json'},
               method: 'post', body: thisFile
             }).then(res => res.json()).then(
-              res => res.status && [
-                delete afState.form[opts.id][name],
-                m.redraw()
-              ]
+              res => _.assign(afState, {
+                form: _.assign(afState.form, {
+                  [opts.id]: _.omit(afState.form[opts.id], name)
+                })
+              }) && m.redraw()
             )
           }, '×'))
         ]) : [
@@ -179,7 +185,8 @@ autoForm = opts => ({view: () => {
                 size: res[name].size,
                 ext: res[name].mimetype.split('/')[1]
               })}
-            ) && m.redraw())
+            ) && m.redraw()),
+            disabled: _.get(opts, 'submit.off')
           }),
           m('p.help', _.get(schema, 'autoform.help'))
         ]
@@ -198,7 +205,8 @@ autoForm = opts => ({view: () => {
       attr.label(name, schema),
       m('input.input', {
         readonly: true, name: !schema.exclude ? name : '', disabled: true,
-        value: schema.autoValue(name, afState.form[opts.id], opts)
+        value: schema.autoValue &&
+          schema.autoValue(name, afState.form[opts.id], opts)
       }),
       m('p.help', _.get(schema, 'autoform.help'))
     ),
@@ -211,7 +219,10 @@ autoForm = opts => ({view: () => {
         required: !schema.optional,
         value: dateValue(_.get(afState.form, [opts.id, name]), true),
         onchange: schema.autoRedraw && function(){},
-        disabled: _.get(opts, 'submit.off')
+        disabled: ors([
+          _.get(opts, 'submit.off'),
+          _.get(schema, 'autoform.disabled')
+        ])
       })),
       m('p.help', _.get(schema, 'autoform.help'))
     ),
@@ -225,7 +236,10 @@ autoForm = opts => ({view: () => {
         placeholder: _.get(schema, 'autoform.placeholder'),
         rows: _.get(schema, 'autoform.rows') || 6,
         onchange: schema.autoRedraw && function(){},
-        disabled: _.get(opts, 'submit.off'),
+        disabled: ors([
+          _.get(opts, 'submit.off'),
+          _.get(schema, 'autoform.disabled')
+        ])
       }),
       m('p.help', _.get(schema, 'autoform.help'))
     ),
@@ -236,7 +250,10 @@ autoForm = opts => ({view: () => {
         required: !schema.optional, type: 'password',
         placeholder: _.get(schema, 'autoform.placeholder'),
         onchange: schema.autoRedraw && function(){},
-        disabled: _.get(opts, 'submit.off')
+        disabled: ors([
+          _.get(opts, 'submit.off'),
+          _.get(schema, 'autoform.disabled')
+        ])
       }),
       m('p.help', _.get(schema, 'autoform.help'))
     ),
@@ -263,7 +280,10 @@ autoForm = opts => ({view: () => {
           required: !schema.optional,
           value: _.get(afState.form, [opts.id, name]),
           onchange: schema.autoRedraw && function(){},
-          disabled: _.get(opts, 'submit.off')
+          disabled: ors([
+            _.get(opts, 'submit.off'),
+            _.get(schema, 'autoform.disabled')
+          ])
         },
         m('option', {value: ''}, '-'),
         schema.autoform.options(name, afState.form[opts.id])
@@ -312,13 +332,12 @@ autoForm = opts => ({view: () => {
         attr.label(name, schema),
         !_.get(opts, 'submit.off') && m('.field.is-grouped', [
           {label: 'Add +', opt: 'inc'}, {label: 'Rem -', opt: 'dec'},
-          {label: afState.arrLen[name]}
+          {label: afState.arrLen[name] || (_.get(opts.doc, name))?.length}
         ].map(i => m('.control', m(
           '.button.is-small', i.opt && attr.arrLen(name, i.opt), i.label)
         ))),
         _.range(
-          (_.get(opts.doc, name))?.length,
-          afState.arrLen[name]
+          0, afState.arrLen[name] || (_.get(opts.doc, name))?.length
         ).map(i => withAs(
           opts.schema[normal(name) + '.$'],
           childSchema => inputTypes(name + '.' + i, childSchema)[
@@ -344,7 +363,10 @@ autoForm = opts => ({view: () => {
           min: schema.minMax && schema.minMax(name, afState.form[opts.id])[0],
           max: schema.minMax && schema.minMax(name, afState.form[opts.id])[1],
           onchange: schema.autoRedraw && function(){},
-          disabled: _.get(opts, 'submit.off'),
+          disabled: ors([
+            _.get(opts, 'submit.off'),
+            _.get(schema, 'autoform.disabled')
+          ]),
           type: _.findKey(
             {date: Date, text: String, number: Number},
             (val, key) => val === schema.type
